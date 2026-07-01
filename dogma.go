@@ -74,10 +74,11 @@ type Client struct {
 	baseURL *url.URL // Base URL for API requests.
 
 	// Services are used to communicate for the different parts of the Central Dogma server API.
-	project    *projectService
-	repository *repositoryService
-	content    *contentService
-	watch      *watchService
+	project     *projectService
+	repository  *repositoryService
+	content     *contentService
+	watch       *watchService
+	appIdentity *appIdentityService
 
 	// metrics
 	metricCollector *metrics.Metrics
@@ -182,6 +183,7 @@ func newClientWithHTTPClient(baseURL *url.URL, client *http.Client) (*Client, er
 	c.repository = (*repositoryService)(service)
 	c.content = (*contentService)(service)
 	c.watch = (*watchService)(service)
+	c.appIdentity = (*appIdentityService)(service)
 	return c, nil
 }
 
@@ -500,6 +502,18 @@ func (c *Client) GetDiffs(ctx context.Context,
 func (c *Client) Push(ctx context.Context, projectName, repoName, baseRevision string,
 	commitMessage *CommitMessage, changes []*Change) (result *PushResult, httpStatusCode int, err error) {
 	return c.content.push(ctx, projectName, repoName, baseRevision, commitMessage, changes)
+}
+
+// CreateAppIdentity creates an app identity.
+func (c *Client) CreateAppIdentity(
+	ctx context.Context, request *CreateAppIdentityRequest) (appIdentity *AppIdentity, httpStatusCode int, err error) {
+	return c.appIdentity.create(ctx, request)
+}
+
+// AddAppIdentityToProject adds an app identity to a project with the given role.
+func (c *Client) AddAppIdentityToProject(
+	ctx context.Context, projectName, appID string, role ProjectRole) (revision int, httpStatusCode int, err error) {
+	return c.appIdentity.addToProject(ctx, projectName, appID, role)
 }
 
 func (c *Client) watchWithWatcher(w *Watcher) (result <-chan WatchResult, closer func()) {
