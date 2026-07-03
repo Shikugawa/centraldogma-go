@@ -177,32 +177,6 @@ func TestRepositoryRoleAPIs(t *testing.T) {
 	}
 }
 
-func TestRemoveAndPurgeAppIdentity(t *testing.T) {
-	c, mux, teardown := setup()
-	defer teardown()
-
-	mux.HandleFunc("/api/v1/appIdentities/my-app", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodDelete)
-		fmt.Fprint(w, `{"appId":"my-app","type":"TOKEN"}`)
-	})
-	mux.HandleFunc("/api/v1/appIdentities/my-app/removed", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, http.MethodDelete)
-		fmt.Fprint(w, `{"appId":"my-app","type":"TOKEN"}`)
-	})
-
-	appID, httpStatusCode, _ := c.RemoveAppIdentity(context.Background(), "my-app")
-	testStatusCode(t, httpStatusCode, 200)
-	if appID.AppID != "my-app" {
-		t.Errorf("RemoveAppIdentity returned %+v, want appId my-app", appID)
-	}
-
-	appID, httpStatusCode, _ = c.PurgeAppIdentity(context.Background(), "my-app")
-	testStatusCode(t, httpStatusCode, 200)
-	if appID.AppID != "my-app" {
-		t.Errorf("PurgeAppIdentity returned %+v, want appId my-app", appID)
-	}
-}
-
 func TestAppIdentityRevisionUnmarshalJSON(t *testing.T) {
 	var fromNumber appIdentityRevision
 	if err := json.Unmarshal([]byte(`49`), &fromNumber); err != nil {

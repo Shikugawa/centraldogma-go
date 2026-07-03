@@ -522,12 +522,6 @@ func (c *Client) RemoveAppIdentity(
 	return c.appIdentity.remove(ctx, appID)
 }
 
-// PurgeAppIdentity purges a removed app identity.
-func (c *Client) PurgeAppIdentity(
-	ctx context.Context, appID string) (appIdentity *AppIdentity, httpStatusCode int, err error) {
-	return c.appIdentity.purge(ctx, appID)
-}
-
 // UpdateAppIdentityStatus updates app identity status to active or inactive.
 func (c *Client) UpdateAppIdentityStatus(
 	ctx context.Context, appID string, status AppIdentityStatus) (appIdentity *AppIdentity, httpStatusCode int, err error) {

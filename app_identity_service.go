@@ -175,26 +175,6 @@ func (a *appIdentityService) remove(ctx context.Context, appID string) (*AppIden
 	return appIdentity, httpStatusCode, nil
 }
 
-func (a *appIdentityService) purge(ctx context.Context, appID string) (*AppIdentity, int, error) {
-	u, err := url.Parse(path.Join(defaultPathPrefix, appIdentities, appID, actionRemoved))
-	if err != nil {
-		return nil, UnknownHttpStatusCode, err
-	}
-
-	req, err := a.client.newRequest(http.MethodDelete, u, nil)
-	if err != nil {
-		return nil, UnknownHttpStatusCode, err
-	}
-
-	appIdentity := new(AppIdentity)
-	httpStatusCode, err := a.client.do(ctx, req, appIdentity, false)
-	if err != nil {
-		return nil, httpStatusCode, err
-	}
-
-	return appIdentity, httpStatusCode, nil
-}
-
 func (a *appIdentityService) updateStatus(
 	ctx context.Context, appID string, status AppIdentityStatus) (*AppIdentity, int, error) {
 	u, err := url.Parse(path.Join(defaultPathPrefix, appIdentities, appID))
